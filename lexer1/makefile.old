@@ -1,0 +1,53 @@
+# Some simples constants.
+CFLAGS = -Wall
+CPPFLAGS = -I include
+CC = gcc
+MKDIR := mkdir -p
+RM = rm
+
+# Internal variables.
+sources = $(wildcard *.c)
+objects = $(subst .c,.o,$(sources))
+lexsrcs = $(wildcard *.l)
+lextrgt = $(subst .l,.c,$(lexsrcs))
+#lextrgt = $(lexsrcs:.l=.c)
+targets = count_words
+
+# Set the virtual paths...
+vpath %.c src
+vpath %.l src
+vpath %.h include
+
+# A function or two.
+maybe-make-dir = $(if $(wildcard $1),,$(MKDIR) $1)
+assert-not-null = $(if $1,,$(error Illegal null value.))
+
+# Some targets.
+.PRECIOUS: $(lextrgt)
+
+.PHONY: all
+all: $(targets)
+
+.PHONY: listfiles
+listfiles:
+	@echo "Sources $(sources)"
+	@echo "Objects $(objects)"
+	@echo "Lexer sources $(lexsrcs)"
+	@echo "Lexer targets $(lextrgt)"
+	@echo "Targets $(targets)"
+
+.PHONY: clean
+clean:
+	$(RM) -f $(objects) $(targets) $(lextrgt)
+
+count_words: count_words.o counter.o lexer.o -lfl
+	$(LINK.c) $^ $(OUTPUT_OPTION)
+
+%: %.o
+	$(LINK.c) $^ $(OUTPUT_OPTION)
+
+%.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+%.c: %.l
+	$(LEX.l) $^ > $@
