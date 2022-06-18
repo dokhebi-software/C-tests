@@ -11,7 +11,7 @@ LEXSRCS = $(wildcard *.l)
 lextrgt = $(subst .l,.c,$(lexsrcs))
 #lextrgt = $(lexsrcs:.l=.c)
 libraries = libtest.so
-targets = libtest.so test1 test2 test2a test3 test4 test5 test6 test7 test8 test9
+targets = libtest.so test1 test2 test2a test3 test4 test5 test6 test7 test8 test9 testdb1
 
 # A function or two.
 maybe-make-dir = $(if $(wildcard $1),,$(MKDIR) $1)
@@ -38,6 +38,7 @@ test2a: test2a.o -ltest -lm
 test3: test3.o -ltest -lm
 test4: test4.o -ltest -lm
 test5: test5.o -ltest -lm
+testdb1: testdb1.o -lsqlite3
 
 test6: test6.o
 	$(LINK.c) $^ -pthread $(OUTPUT_OPTION)
